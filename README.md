@@ -53,5 +53,17 @@
    CREATE DATABASE energy_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
    -- ... (таблицы users, appliances, tariffs)
 2. **Скомпилируйте Java-код**
+   ```bash
    cd energy-consumption-system
    javac -cp "C:/apache-tomcat-9.0.109/lib/servlet-api.jar" -d web/WEB-INF/classes src/main/java/com/energy/*.java
+3. **Разверните в Tomcat**
+   Скопируйте папку web в:
+   ```bash
+   C:\apache-tomcat-9.0.109\webapps\energy
+5. **Запустите сервер**
+   ```bash
+   cd C:\apache-tomcat-9.0.109\bin
+   .\startup.bat
+6. **Откройте в браузере**
+   ```bash
+   http://localhost:8080/energy/
