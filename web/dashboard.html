@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Энергопотребление — Анализ и рекомендации</title>
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: #f8f9fa;
+        color: #333;
+        line-height: 1.6;
+      }
+      .container {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      header {
+        text-align: center;
+        margin-bottom: 25px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid #eaeaea;
+      }
+      h1 {
+        color: #2c3e50;
+        margin-bottom: 5px;
+      }
+      .user-info {
+        color: #7f8c8d;
+        font-size: 0.95rem;
+      }
+
+      /* Статистика */
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+        margin-bottom: 25px;
+      }
+      .stat-card {
+        background: white;
+        padding: 15px;
+        border-radius: 8px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+        text-align: center;
+      }
+      .stat-value {
+        font-size: 1.4rem;
+        font-weight: bold;
+        color: #2980b9;
+        margin: 5px 0;
+      }
+      .stat-label {
+        font-size: 0.9rem;
+        color: #7f8c8d;
+      }
+      .recommendation {
+        background: #e3f2fd;
+        border-left: 4px solid #2196f3;
+        padding: 12px 15px;
+        border-radius: 0 4px 4px 0;
+        margin-top: 10px;
+        font-size: 0.95rem;
+      }
+
+      /* Форма */
+      .form-section {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+        margin-bottom: 25px;
+      }
+      .form-section h2 {
+        margin-bottom: 15px;
+        color: #2c3e50;
+      }
+      .form-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+        margin-bottom: 15px;
+      }
+      label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: 500;
+        color: #2c3e50;
+      }
+      select,
+      input {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 1rem;
+      }
+      button {
+        background: #27ae60;
+        color: white;
+        border: none;
+        padding: 10px 15px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 1rem;
+        transition: background 0.2s;
+      }
+      button:hover {
+        background: #219653;
+      }
+      .btn-danger {
+        background: #e74c3c;
+      }
+      .btn-danger:hover {
+        background: #c0392b;
+      }
+      .hint {
+        font-size: 0.85rem;
+        color: #7f8c8d;
+        margin-top: 5px;
+      }
+
+      /* Приборы */
+      .appliances-list {
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+        margin-bottom: 25px;
+      }
+      .appliances-list h2 {
+        padding: 15px 20px;
+        border-bottom: 1px solid #eee;
+        color: #2c3e50;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      th,
+      td {
+        padding: 12px 15px;
+        text-align: left;
+        border-bottom: 1px solid #eee;
+      }
+      th {
+        background: #f8f9fa;
+        color: #2c3e50;
+        font-weight: 600;
+      }
+      tr:hover {
+        background: #f8f9fa;
+      }
+
+      /* Тариф */
+      .tariff-section {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+        margin-bottom: 25px;
+      }
+
+      /* Рекомендации */
+      .tips-section {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+      }
+      .tips-section h2 {
+        margin-bottom: 15px;
+        color: #2c3e50;
+      }
+      .tip-item {
+        padding: 10px 0;
+        border-bottom: 1px solid #eee;
+      }
+      .tip-item:last-child {
+        border-bottom: none;
+      }
+      .tip-warning {
+        color: #e67e22;
+      }
+      .tip-success {
+        color: #27ae60;
+      }
+      .tip-comparison {
+        color: #2980b9;
+      }
+
+      /* Кнопки действий */
+      .actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-top: 10px;
+      }
+      .btn-outline {
+        background: transparent;
+        border: 1px solid #27ae60;
+        color: #27ae60;
+      }
+      .btn-outline:hover {
+        background: #27ae60;
+        color: white;
+      }
+
+      /* Адаптив */
+      @media (max-width: 600px) {
+        .stats,
+        .form-grid {
+          grid-template-columns: 1fr;
+        }
+        .container {
+          padding: 15px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1>Анализ энергопотребления</h1>
+        <p class="user-info">
+          Привет, <span id="username">пользователь</span>!
+        </p>
+      </header>
+
+      <!-- Верхняя панель: статистика -->
+      <div class="stats">
+        <div class="stat-card">
+          <div class="stat-label">Общее потребление</div>
+          <div class="stat-value" id="total-kwh">0.00</div>
+          <div>кВт·ч/день</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Стоимость</div>
+          <div class="stat-value" id="total-cost">0.00</div>
+          <div>руб./день</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Сравнение</div>
+          <div class="stat-value" id="comparison">—</div>
+          <div>от среднего</div>
+        </div>
+      </div>
+      <div class="recommendation" id="main-recommendation">
+        Добавьте свои приборы, чтобы получить персональные рекомендации.
+      </div>
+
+      <!-- Форма добавления -->
+      <div class="form-section">
+        <h2>Добавить прибор</h2>
+        <div class="form-grid">
+          <div>
+            <label for="appliance-type">Тип прибора</label>
+            <select id="appliance-type">
+              <option value="lighting">Освещение</option>
+              <option value="fridge">Холодильник</option>
+              <option value="washing_machine">Стиральная машина</option>
+              <option value="tv">Телевизор</option>
+              <option value="computer">Компьютер</option>
+              <option value="ac">Кондиционер</option>
+            </select>
+          </div>
+          <div>
+            <label for="power">Мощность (Вт)</label>
+            <input type="number" id="power" min="1" value="100" />
+            <div class="hint" id="power-hint">
+              Средняя мощность телевизора — 100 Вт
+            </div>
+          </div>
+          <div>
+            <label for="hours">Время использования (часы/день)</label>
+            <input
+              type="number"
+              id="hours"
+              min="0"
+              max="24"
+              step="0.5"
+              value="4"
+            />
+          </div>
+        </div>
+        <button id="add-appliance">✅ Добавить</button>
+        <div
+          id="form-error"
+          style="color: #e74c3c; margin-top: 10px; min-height: 1.2rem"
+        ></div>
+      </div>
+
+      <!-- Тариф -->
+      <div class="tariff-section">
+        <h2>Настройки тарифа</h2>
+        <div
+          style="display: flex; gap: 15px; align-items: end; flex-wrap: wrap"
+        >
+          <div style="flex: 1; min-width: 200px">
+            <label for="tariff-input">Тариф (руб./кВт·ч)</label>
+            <input
+              type="number"
+              id="tariff-input"
+              step="0.01"
+              min="0.01"
+              value="5.50"
+            />
+          </div>
+          <button id="save-tariff" class="btn-outline">
+            💾 Сохранить тариф
+          </button>
+        </div>
+      </div>
+
+      <!-- Список приборов -->
+      <div class="appliances-list">
+        <h2>Ваши приборы</h2>
+        <table id="appliances-table">
+          <thead>
+            <tr>
+              <th>Прибор</th>
+              <th>Мощность (Вт)</th>
+              <th>Часы/день</th>
+              <th>кВт·ч/день</th>
+              <th>Руб./день</th>
+              <th>Действие</th>
+            </tr>
+          </thead>
+          <tbody id="appliances-body">
+            <!-- Заполняется через JS -->
+          </tbody>
+        </table>
+        <div
+          id="no-appliances"
+          style="padding: 20px; text-align: center; color: #7f8c8d"
+        >
+          Нет добавленных приборов
+        </div>
+      </div>
+
+      <!-- Рекомендации -->
+      <div class="tips-section">
+        <h2>Рекомендации по экономии</h2>
+        <div id="tips-list">
+          <!-- Заполняется через JS -->
+        </div>
+      </div>
+
+      <!-- Кнопки -->
+      <div class="actions">
+        <button id="logout" class="btn-danger">🚪 Выйти</button>
+      </div>
+    </div>
+
+    <script>
+      // Константы
+      const AVERAGE_KWH = 7.5; // среднее по РФ
+      const APPLIANCE_NAMES = {
+        lighting: "Освещение",
+        fridge: "Холодильник",
+        washing_machine: "Стиралка",
+        tv: "Телевизор",
+        computer: "Компьютер",
+        ac: "Кондиционер",
+      };
+      const POWER_HINTS = {
+        lighting: "Средняя мощность лампы — 10 Вт",
+        fridge: "Средняя мощность холодильника — 150 Вт",
+        washing_machine: "Средняя мощность стиралки — 2000 Вт",
+        tv: "Средняя мощность телевизора — 100 Вт",
+        computer: "Средняя мощность ПК — 300 Вт",
+        ac: "Средняя мощность кондиционера — 1000 Вт",
+      };
+
+      // Глобальные данные
+      let appliances = [];
+      let tariff = 5.5;
+
+      // DOM элементы
+      const applianceType = document.getElementById("appliance-type");
+      const powerInput = document.getElementById("power");
+      const hoursInput = document.getElementById("hours");
+      const tariffInput = document.getElementById("tariff-input");
+      const formError = document.getElementById("form-error");
+      const appliancesBody = document.getElementById("appliances-body");
+      const noAppliances = document.getElementById("no-appliances");
+
+      // Инициализация
+      async function init() {
+        await loadUserData();
+        setupEventListeners();
+        updatePowerHint();
+      }
+
+      function setupEventListeners() {
+        applianceType.addEventListener("change", updatePowerHint);
+        document
+          .getElementById("add-appliance")
+          .addEventListener("click", addAppliance);
+        document
+          .getElementById("save-tariff")
+          .addEventListener("click", saveTariff);
+        document.getElementById("logout").addEventListener("click", logout);
+      }
+
+      function updatePowerHint() {
+        const type = applianceType.value;
+        document.getElementById("power-hint").textContent =
+          POWER_HINTS[type] || "";
+      }
+
+      async function loadUserData() {
+        const res = await fetch("/energy/appliance");
+        if (res.status === 401) {
+          window.location.href = "index.html";
+          return;
+        }
+        const data = await res.json();
+        if (data.error) {
+          alert("Ошибка загрузки: " + data.error);
+          return;
+        }
+        tariff = data.tariff;
+        tariffInput.value = tariff;
+        appliances = data.appliances || [];
+        renderAppliances();
+        updateStats();
+      }
+
+      async function addAppliance() {
+        formError.textContent = "";
+        const name = applianceType.value;
+        const power = parseInt(powerInput.value);
+        const hours = parseFloat(hoursInput.value);
+
+        if (!power || !hours || hours < 0 || hours > 24 || power <= 0) {
+          formError.textContent = "Проверьте мощность и время";
+          return;
+        }
+
+        const res = await fetch("/energy/appliance", {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: new URLSearchParams({
+            name,
+            power_w: power,
+            hours_per_day: hours,
+          }),
+        });
+
+        const data = await res.json();
+        if (res.ok) {
+          powerInput.value = "";
+          hoursInput.value = "4";
+          await loadUserData(); // перезагрузим данные
+        } else {
+          formError.textContent = data.error || "Ошибка добавления";
+        }
+      }
+
+      async function saveTariff() {
+        const rate = parseFloat(tariffInput.value);
+        if (!rate || rate <= 0) {
+          alert("Некорректный тариф");
+          return;
+        }
+
+        const res = await fetch("/energy/tariff", {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: new URLSearchParams({ rate }),
+        });
+
+        const data = await res.json();
+        if (res.ok) {
+          tariff = rate;
+          alert("Тариф сохранён");
+          updateStats();
+        } else {
+          alert("Ошибка: " + (data.error || "не удалось сохранить"));
+        }
+      }
+
+      function renderAppliances() {
+        if (appliances.length === 0) {
+          appliancesBody.innerHTML = "";
+          noAppliances.style.display = "block";
+          return;
+        }
+        noAppliances.style.display = "none";
+        appliancesBody.innerHTML = appliances.map(app => {
+    const kwh = (app.power_w * app.hours_per_day / 1000).toFixed(2);
+    const cost = (kwh * tariff).toFixed(2);
+    return `
+        <tr>
+            <td>${APPLIANCE_NAMES[app.name] || app.name}</td>
+            <td>${app.power_w}</td>
+            <td>${app.hours_per_day}</td>
+            <td>${kwh}</td>
+            <td>${cost}</td>
+            <td>
+                <button class="btn-danger" onclick="removeAppliance(${app.id})">❌</button>
+            </td>
+        </tr>
+    `;
+}).join('');
+      }
+
+      function updateStats() {
+        const totalKwh = appliances.reduce(
+          (sum, app) => sum + (app.power_w * app.hours_per_day) / 1000,
+          0
+        );
+        const totalCost = totalKwh * tariff;
+        const diffPercent = (
+          ((totalKwh - AVERAGE_KWH) / AVERAGE_KWH) *
+          100
+        ).toFixed(0);
+
+        document.getElementById("total-kwh").textContent = totalKwh.toFixed(2);
+        document.getElementById("total-cost").textContent =
+          totalCost.toFixed(2);
+        document.getElementById("comparison").textContent =
+          totalKwh > 0
+            ? diffPercent >= 0
+              ? `+${diffPercent}%`
+              : `${diffPercent}%`
+            : "—";
+
+        // Основная рекомендация
+        let mainRec = "";
+        if (totalKwh > AVERAGE_KWH * 1.2) {
+          mainRec = `Вы используете на ${Math.abs(
+            diffPercent
+          )}% больше энергии, чем средний пользователь. Отключайте приборы от сети!`;
+        } else if (totalKwh > 0) {
+          mainRec = "Отлично! Ваше потребление в пределах нормы.";
+        } else {
+          mainRec = "Добавьте приборы для анализа.";
+        }
+        document.getElementById("main-recommendation").textContent = mainRec;
+
+        // Генерация советов
+        generateTips(totalKwh);
+      }
+
+      function generateTips(totalKwh) {
+        const tips = [];
+        const fridge = appliances.find((a) => a.name === "fridge");
+        const ac = appliances.find((a) => a.name === "ac");
+        const lighting = appliances.find((a) => a.name === "lighting");
+
+        // Советы по приборам
+        if (fridge && fridge.hours_per_day > 20) {
+          tips.push({
+            text: "Холодильник работает почти круглосуточно. Убедитесь, что дверца плотно закрыта и нет обледенения.",
+            type: "success",
+          });
+        }
+
+        if (ac && ac.hours_per_day > 8) {
+          tips.push({
+            text: `Ваш кондиционер работает ${
+              ac.hours_per_day
+            } часов в день — это ${(
+              (ac.power_w * ac.hours_per_day) /
+              1000
+            ).toFixed(
+              1
+            )} кВт·ч. Попробуйте использовать вентилятор (0.1 кВт·ч).`,
+            type: "warning",
+          });
+        }
+
+        if (lighting && lighting.power_w > 200) {
+          tips.push({
+            text: "Общая мощность освещения высока. Рассмотрите переход на светодиодные лампы — они потребляют в 5–10 раз меньше энергии.",
+            type: "warning",
+          });
+        }
+
+        // Общие советы
+        if (totalKwh > 12) {
+          tips.push({
+            text: "Ваше ежедневное потребление превышает 12 кВт·ч. Рассмотрите установку солнечных панелей или использование энергосберегающих режимов.",
+            type: "warning",
+          });
+        }
+
+        if (totalKwh > 0 && totalKwh <= 5) {
+          tips.push({
+            text: "Отличный результат! Вы тратите меньше 5 кВт·ч/день — это уровень энергоэффективного дома.",
+            type: "success",
+          });
+        }
+
+        if (totalKwh > AVERAGE_KWH) {
+          tips.push({
+            text: `Сравнение: вы тратите ${totalKwh.toFixed(
+              1
+            )} кВт·ч/день, среднее по России — ${AVERAGE_KWH} кВт·ч.`,
+            type: "comparison",
+          });
+        }
+
+        if (tips.length === 0 && totalKwh > 0) {
+          tips.push({
+            text: "Продолжайте в том же духе! Регулярно проверяйте приборы на неисправности.",
+            type: "success",
+          });
+        }
+
+        // Отображение
+        const tipsList = document.getElementById("tips-list");
+        if (tips.length === 0) {
+          tipsList.innerHTML =
+            '<p style="color:#7f8c8d;">Добавьте больше данных для персональных советов.</p>';
+        } else {
+          tipsList.innerHTML = tips
+            .map(
+              (tip) =>
+                `<div class="tip-item tip-${tip.type}">• ${tip.text}</div>`
+            )
+            .join("");
+        }
+      }
+
+      function logout() {
+        fetch("/energy/logout", { method: "POST" }).then(() => {
+          window.location.href = "index.html";
+        });
+      }
+
+      async function removeAppliance(id) {
+    if (!confirm('Удалить прибор?')) return;
+
+    const res = await fetch(`/energy/appliance?id=${id}`, {
+        method: 'DELETE'
+    });
+
+    const data = await res.json();
+    if (res.ok) {
+        await loadUserData(); // перезагрузим список
+    } else {
+        alert('Ошибка: ' + (data.error || 'не удалось удалить'));
+    }
+}
+
+      // Запуск
+      init();
+    </script>
+  </body>
+</html>

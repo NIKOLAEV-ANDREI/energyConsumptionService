@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Вход — Анализ энергопотребления</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Вход</h1>
+        <form id="loginForm">
+            <div class="input-group">
+                <label for="username">Логин</label>
+                <input type="text" id="username" name="username" required>
+                <div class="error" id="username-error"></div>
+            </div>
+            <div class="input-group">
+                <label for="password">Пароль</label>
+                <input type="password" id="password" name="password" required>
+                <div class="error" id="password-error"></div>
+            </div>
+            <button type="submit">Войти</button>
+            <p>Нет аккаунта? <a href="register.html">Зарегистрироваться</a></p>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            clearErrors();
+
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            const res = await fetch('/energy/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: new URLSearchParams({ username, password })
+            });
+
+            const data = await res.json();
+
+            if (res.ok) {
+                window.location.href = 'dashboard.html';
+            } else {
+                showError('password-error', data.error || 'Ошибка входа');
+            }
+        });
+
+        function clearErrors() {
+            document.querySelectorAll('.error').forEach(el => {
+                el.textContent = '';
+                el.classList.remove('show');
+            });
+        }
+
+        function showError(id, message) {
+            const el = document.getElementById(id);
+            el.textContent = message;
+            el.classList.add('show');
+        }
+    </script>
+</body>
+</html>
