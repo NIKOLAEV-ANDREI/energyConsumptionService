@@ -262,6 +262,7 @@
           <div>
             <label for="appliance-type">Тип прибора</label>
             <select id="appliance-type">
+              <option value="stove">Плита</option>
               <option value="lighting">Освещение</option>
               <option value="fridge">Холодильник</option>
               <option value="washing_machine">Стиральная машина</option>
@@ -362,6 +363,7 @@
       // Константы
       const AVERAGE_KWH = 7.5; // среднее по РФ
       const APPLIANCE_NAMES = {
+        stove: "Плита (инд.)",
         lighting: "Освещение",
         fridge: "Холодильник",
         washing_machine: "Стиралка",
@@ -370,6 +372,7 @@
         ac: "Кондиционер",
       };
       const POWER_HINTS = {
+        stove: "Средняя мощность инд. плиты — 5 Вт",
         lighting: "Средняя мощность лампы — 10 Вт",
         fridge: "Средняя мощность холодильника — 150 Вт",
         washing_machine: "Средняя мощность стиралки — 2000 Вт",
@@ -577,7 +580,7 @@
             type: "warning",
           });
         }
-
+        
         if (lighting && lighting.power_w > 200) {
           tips.push({
             text: "Общая мощность освещения высока. Рассмотрите переход на светодиодные лампы — они потребляют в 5–10 раз меньше энергии.",

@@ -14,7 +14,7 @@ import java.util.List;
 public class ApplianceServlet extends HttpServlet {
 
     private static final String[] VALID_APPLIANCES = {
-        "lighting", "fridge", "washing_machine", "tv", "computer", "ac"
+        "stove", "lighting", "fridge", "washing_machine", "tv", "computer", "ac"
     };
 
     @Override
